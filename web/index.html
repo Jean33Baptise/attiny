@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programmateur ATtiny85 et ATtiny13 en ligne – Arduino as ISP</title>
+<meta name="description" content="Programmez un ATtiny85 ou un ATtiny13 directement depuis votre navigateur, sans Arduino IDE : écrivez le code, branchez un Arduino Uno ou Nano en programmateur (ArduinoISP) et téléversez en un clic. Gratuit.">
+<meta name="keywords" content="attiny, attiny85, attiny13, programmateur attiny, programmer attiny85, arduino as isp, arduinoisp, programmateur en ligne, web serial">
+<link rel="canonical" href="%%SITE_URL%%/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Programmateur ATtiny85 / ATtiny13 en ligne">
+<meta property="og:description" content="Écrivez votre code et programmez un ATtiny depuis le navigateur avec un Arduino Uno ou Nano. Sans installer Arduino IDE.">
+<meta property="og:url" content="%%SITE_URL%%/">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Micro P Lab">
+<meta property="og:image" content="%%SITE_URL%%/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="author" content="Micro P Lab">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/img/favicon.png">
+<link rel="apple-touch-icon" href="/img/icon-192.png">
+<meta name="theme-color" content="#11151b">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Programmateur ATtiny en ligne",
+  "url": "%%SITE_URL%%/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Windows, macOS, Linux, ChromeOS (Chrome ou Edge)",
+  "inLanguage": "fr",
+  "description": "Programmateur en ligne pour microcontrôleurs ATtiny85 et ATtiny13 avec un Arduino Uno ou Nano en mode ArduinoISP, via Web Serial.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "image": "%%SITE_URL%%/img/og-image.png",
+  "publisher": { "@type": "Organization", "name": "Micro P Lab", "logo": "%%SITE_URL%%/img/icon-512.png" }
+}
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#ffffff; --line:#dfe2e7; --text:#1d2330; --muted:#5f6b7d;
+  --accent:#00878f; --accent-ink:#fff; --ok:#1f9d55; --warn:#c77d00; --err:#d64545;
+  --console:#0f1419; --console-text:#cfd8dc; --chip:#eef1f4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151b; --panel:#181d25; --line:#2a313c; --text:#e6e9ee; --muted:#8b95a5;
+    --accent:#19b3bc; --accent-ink:#06191b; --chip:#212833; --console:#0b0e12;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11151b; --panel:#181d25; --line:#2a313c; --text:#e6e9ee; --muted:#8b95a5;
+  --accent:#19b3bc; --accent-ink:#06191b; --chip:#212833; --console:#0b0e12;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.5 system-ui,"Segoe UI",Roboto,sans-serif}
+button,select{font:inherit}
+a{color:var(--accent)}
+.app{height:100vh;min-height:560px;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:16px;margin:0 8px 0 0;font-weight:650;display:flex;align-items:center;gap:12px}
+header h1 span{color:var(--accent)}
+.brand{display:flex;align-items:center;padding-right:12px;border-right:1px solid var(--line)}
+.brand img{height:30px;width:auto;display:block}
+.brand img.logo-on-dark{display:none}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .brand img.logo-on-dark{display:block}
+  :root:not([data-theme="light"]) .brand img.logo-on-light{display:none}
+}
+:root[data-theme="dark"] .brand img.logo-on-dark{display:block}
+:root[data-theme="dark"] .brand img.logo-on-light{display:none}
+.doc .brand{border:0;padding:0;margin-bottom:10px}
+.doc .brand img{height:44px}
+.grp{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lbl{font-size:12px;color:var(--muted)}
+select{background:var(--chip);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+.btn{border:1px solid var(--line);background:var(--chip);color:var(--text);border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.small{padding:4px 9px;font-size:12px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--chip);border:1px solid var(--line)}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+.badge.isp i{background:var(--ok)} .badge.normal i{background:var(--warn)} .badge.err i{background:var(--err)}
+.badge.busy i{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.spacer{flex:1}
+.banner{background:#fff3cd;color:#5c4400;padding:8px 16px;font-size:13px;display:none;border-bottom:1px solid #e6d28a}
+.banner.show{display:block}
+main{flex:1;display:grid;grid-template-columns:1fr 300px;min-height:0}
+.left{display:flex;flex-direction:column;min-width:0;min-height:0}
+.toolbar{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+#editorWrap{flex:1;min-height:200px;position:relative;overflow:hidden}
+#editorWrap .CodeMirror,#fallback{position:absolute;inset:0;height:100%;font:13.5px/1.5 Consolas,"Cascadia Code",monospace}
+#fallback{width:100%;border:0;padding:10px;background:#212121;color:#eee;resize:none;tab-size:2}
+.err-line{background:rgba(214,69,69,.28)!important}
+.progress{height:3px;background:transparent;position:relative}
+.progress b{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent);transition:width .15s}
+.console{height:190px;background:var(--console);color:var(--console-text);font:12px/1.45 Consolas,monospace;overflow:auto;padding:8px 12px;white-space:pre-wrap;border-top:1px solid var(--line)}
+.console .ok{color:#7bd88f}.console .bad{color:#ff7b7b}.console .hint{color:#ffd479}.console .cmd{color:#7fdbff}.console .dim{color:#6c7a86}
+aside{background:var(--panel);border-left:1px solid var(--line);overflow:auto;padding:14px}
+aside h2{font-size:12px;margin:16px 0 8px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+aside h2:first-child{margin-top:0}
+.status-msg{font-size:13px;margin:6px 0 10px;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:6px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+td,th{border-bottom:1px solid var(--line);padding:4px;text-align:left}
+th{color:var(--muted);font-weight:600}
+.note{font-size:12px;color:var(--muted);background:var(--chip);border-radius:6px;padding:8px 10px;margin-top:8px}
+.note b{color:var(--text)}
+svg text{font-family:Consolas,monospace}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal.open{display:flex}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-width:440px;width:100%;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.card h3{margin:0 0 6px;font-size:16px}
+.card p{margin:0 0 14px;color:var(--muted);font-size:13px}
+.row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+/* contenu (référencement) */
+.doc{max-width:860px;margin:0 auto;padding:40px 16px 60px}
+.doc h2{font-size:22px;margin:32px 0 10px}
+.doc h3{font-size:16px;margin:22px 0 6px}
+.doc p,.doc li{color:var(--text);font-size:15px}
+.doc table{font-size:14px;max-width:520px}
+.doc footer{margin-top:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:820px){
+  .app{height:auto}
+  main{grid-template-columns:1fr} aside{border-left:0;border-top:1px solid var(--line)}
+  #editorWrap{min-height:340px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>
+    <a class="brand" href="/" aria-label="Micro P Lab – accueil">
+      <img class="logo-on-light" src="/img/logo-micro-p-lab-dark.png" alt="Micro P Lab" width="101" height="30">
+      <img class="logo-on-dark" src="/img/logo-micro-p-lab.png" alt="Micro P Lab" width="101" height="30">
+    </a>
+    <span style="color:var(--text)">Programmateur <span>ATtiny</span></span>
+  </h1>
+  <div class="grp">
+    <button class="btn" id="btnPort">🔌 Choisir le port</button>
+    <span class="lbl" id="portName">aucun port</span>
+  </div>
+  <div class="grp">
+    <span class="lbl">Arduino</span>
+    <select id="board" aria-label="Carte utilisée comme programmateur"></select>
+  </div>
+  <span class="badge" id="badge"><i></i><span>Non connecté</span></span>
+  <div class="spacer"></div>
+  <a class="btn small" href="#aide">Aide</a>
+  <button class="btn small" id="themeBtn" title="Thème clair / sombre" aria-label="Changer de thème">◐</button>
+</header>
+<div class="banner" id="banner">⚠ Ce navigateur ne permet pas d'accéder au port USB. Utilisez <b>Google Chrome</b> ou <b>Microsoft Edge</b> sur ordinateur.</div>
+
+<main>
+  <section class="left">
+    <div class="toolbar">
+      <span class="lbl">Puce</span><select id="target" aria-label="Puce"></select>
+      <span class="lbl">Horloge</span><select id="clock" aria-label="Horloge"></select>
+      <select id="example" aria-label="Exemples"></select>
+      <div class="spacer"></div>
+      <button class="btn" id="btnCompile" title="Ctrl+R">✓ Vérifier</button>
+      <button class="btn primary" id="btnUpload" title="Ctrl+U">→ Téléverser</button>
+    </div>
+    <div id="editorWrap"><textarea id="fallback" spellcheck="false" aria-label="Code"></textarea></div>
+    <div class="progress"><b id="bar"></b></div>
+    <div class="console" id="console" aria-live="polite"></div>
+  </section>
+
+  <aside>
+    <h2>Arduino programmateur</h2>
+    <div class="status-msg" id="statusMsg">Branchez votre Arduino Uno ou Nano puis choisissez son port.</div>
+    <div class="stack">
+      <button class="btn" id="btnCheck">↻ Vérifier le programmateur</button>
+      <button class="btn" id="btnIsp">Passer en mode programmateur</button>
+      <button class="btn" id="btnNormal">Revenir en mode normal</button>
+    </div>
+    <h2>Puce ATtiny</h2>
+    <div class="stack"><button class="btn" id="btnFuses">⚙ Graver les fusibles (horloge)</button></div>
+    <div class="note">À faire <b>une fois</b> sur une puce neuve ou après un changement d'horloge.</div>
+    <h2>Brochage <span id="chipName"></span></h2>
+    <svg id="pinout" viewBox="0 0 270 150" width="100%" role="img" aria-label="Brochage de la puce"></svg>
+    <h2>Câblage</h2>
+    <table>
+      <tr><th>Arduino</th><th>ATtiny</th><th></th></tr>
+      <tr><td>D13</td><td>broche 7</td><td>SCK</td></tr>
+      <tr><td>D12</td><td>broche 6</td><td>MISO</td></tr>
+      <tr><td>D11</td><td>broche 5</td><td>MOSI</td></tr>
+      <tr><td>D10</td><td>broche 1</td><td>RESET</td></tr>
+      <tr><td>5V</td><td>broche 8</td><td>VCC</td></tr>
+      <tr><td>GND</td><td>broche 4</td><td>GND</td></tr>
+    </table>
+    <div class="note"><b>10 µF</b> entre RESET et GND de l'Arduino (+ sur RESET) en mode programmateur. <b>Retirez-le</b> pour changer de mode.</div>
+  </aside>
+</main>
+</div>
+
+<!-- Fenêtre de choix du port -->
+<div class="modal" id="portModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+  <div class="card">
+    <h3 id="pmTitle">Branchez votre programmateur</h3>
+    <p id="pmText">Branchez l'Arduino Uno ou Nano en USB, puis choisissez son port dans la liste proposée par le navigateur.</p>
+    <div class="row">
+      <button class="btn small" id="pmClose">Plus tard</button>
+      <button class="btn primary" id="pmChoose">Choisir le port</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contenu explicatif (aussi lu par Google) -->
+<article class="doc" id="aide">
+  <h2>Programmer un ATtiny85 ou un ATtiny13 en ligne, sans Arduino IDE</h2>
+  <p>Cet outil gratuit permet d'écrire un programme en langage Arduino et de le <strong>téléverser dans un ATtiny85 ou un ATtiny13</strong> directement depuis le navigateur. Il utilise un <strong>Arduino Uno ou Nano comme programmateur ISP</strong> (ArduinoISP). La compilation se fait sur le serveur et le téléversement passe par le port USB grâce à Web Serial. Il n'y a rien à installer.</p>
+
+  <h3>1. Préparer l'Arduino en programmateur</h3>
+  <ol>
+    <li>Branchez l'Arduino Uno ou Nano en USB, <em>sans</em> condensateur sur RESET.</li>
+    <li>Cliquez sur <strong>Choisir le port</strong> et sélectionnez-le.</li>
+    <li>Cliquez sur <strong>Passer en mode programmateur</strong> : le site installe ArduinoISP sur la carte.</li>
+    <li>Placez un condensateur de <strong>10 µF entre RESET et GND</strong> de l'Arduino (patte + sur RESET).</li>
+  </ol>
+
+  <h3>2. Câbler l'ATtiny</h3>
+  <table>
+    <tr><th>Arduino Uno / Nano</th><th>ATtiny85 / ATtiny13</th></tr>
+    <tr><td>D13</td><td>broche 7 (SCK)</td></tr>
+    <tr><td>D12</td><td>broche 6 (MISO)</td></tr>
+    <tr><td>D11</td><td>broche 5 (MOSI)</td></tr>
+    <tr><td>D10</td><td>broche 1 (RESET)</td></tr>
+    <tr><td>5V</td><td>broche 8 (VCC)</td></tr>
+    <tr><td>GND</td><td>broche 4 (GND)</td></tr>
+  </table>
+  <p>Ajoutez un condensateur de 100 nF entre les broches 8 et 4 de l'ATtiny. Le point sur le boîtier indique la broche 1.</p>
+
+  <h3>3. Programmer</h3>
+  <ol>
+    <li>Choisissez la puce (ATtiny85 ou ATtiny13) et l'horloge.</li>
+    <li>Sur une puce neuve, cliquez une fois sur <strong>Graver les fusibles</strong>.</li>
+    <li>Écrivez votre code et cliquez sur <strong>Téléverser</strong>.</li>
+  </ol>
+
+  <h3>Questions fréquentes</h3>
+  <p><strong>Quel navigateur utiliser ?</strong> Google Chrome ou Microsoft Edge sur ordinateur (Windows, macOS, Linux, ChromeOS). Firefox et Safari ne prennent pas en charge Web Serial.</p>
+  <p><strong>Mon Nano ne répond pas.</strong> Les clones de Nano utilisent souvent l'ancien bootloader : choisissez « Nano (ancien bootloader) ». Installez aussi le pilote CH340 si le port n'apparaît pas.</p>
+  <p><strong>« Pas de puce détectée » ?</strong> Vérifiez le sens de l'ATtiny, le câblage D10–D13 et l'alimentation.</p>
+  <p><strong>Comment récupérer mon Arduino ?</strong> Retirez le condensateur et cliquez sur <strong>Revenir en mode normal</strong>. La carte peut ensuite être reprogrammée normalement.</p>
+  <p><strong>Quelles broches utiliser dans le code ?</strong> Les numéros correspondent aux ports PB : <code>3</code> = PB3 (broche 2), <code>4</code> = PB4 (broche 3), <code>0</code> = PB0 (broche 5), <code>1</code> = PB1 (broche 6), <code>2</code> = PB2 (broche 7).</p>
+
+  <footer>
+    <div class="brand">
+      <img class="logo-on-light" src="/img/logo-micro-p-lab-dark.png" alt="Micro P Lab" width="148" height="44" loading="lazy">
+      <img class="logo-on-dark" src="/img/logo-micro-p-lab.png" alt="Micro P Lab" width="148" height="44" loading="lazy">
+    </div>
+    Programmateur ATtiny – un outil <strong>Micro P Lab</strong>. Compilation avec ATTinyCore (ATtiny85) et MicroCore (ATtiny13).
+  </footer>
+</article>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="stk500.js?v=2"></script>
+<script src="app.js?v=2"></script>
+</body>
+</html>
