@@ -26,7 +26,7 @@ http://127.0.0.1:8085 dans **Chrome** ou **Edge**. Arduino IDE 2 doit être inst
 1. Créer un dépôt GitHub contenant ce dossier.
 2. Sur https://render.com : **New → Blueprint** → choisir le dépôt (le fichier
    `render.yaml` configure tout). La construction Docker prend ~10 min.
-3. Mettre l'adresse finale dans la variable `SITE_URL` (ex. `https://programmateur-attiny.onrender.com`).
+3. Mettre l'adresse finale dans la variable `SITE_URL` (ex. `https://attiny.onrender.com`).
 4. Référencement Google : https://search.google.com/search-console → ajouter le site →
    envoyer `https://<votre-site>/sitemap.xml`.
 

@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: programmateur-attiny
+    name: attiny
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/info
     envVars:
       - key: SITE_URL
-        value: https://programmateur-attiny.onrender.com
+        value: https://attiny.onrender.com
